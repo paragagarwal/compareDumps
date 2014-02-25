@@ -14,7 +14,7 @@ def usage(error=None):
     cbTransfer: We assume data format is as follows: {Key, Exp, Flag. CAS, Rev Id, Value}
     Views: We assume data format is as follows: Key, Value, rev Id 
 
-    Syntax: compare_cb_view.py -s sourceDir -t targetDir -mode modeType [options]
+    Syntax: compare_cb_docs.py -s sourceDir -t targetDir -mode modeType [options]
 
     [Required Parameters]
     -s      :: Source Directory for comparison
@@ -124,8 +124,7 @@ class DataComparator(object):
         info={}
         try:
             for line in open(filePath):
-                str1=line+""
-                values=str1.split(",")
+                values=line.split(",")
                 if len(values) >= 6:
                     info[values[0]]=[values[1],values[2],values[3],values[4],values[5:]]
         except Exception, err:
@@ -195,39 +194,43 @@ class DataComparator(object):
     """ Print the analysis results """
     @staticmethod
     def printResult(diff1,diff2,diff3):
+        print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
         print "Analysis of Source and Target Directory Comparison Results"
         print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
         print """1) Difference between Source and Target Keys """
         for o in diff1.keys():
-            print "\n     Key :: "+o+"::",diff1[o]
-        print "number of such cases ::",len(diff1)
+            print "\n Key :: "+o+"::",DataComparator.printAllValues(diff1[o])
+        print "\n number of such cases ::",len(diff1)
         print "----------------------------------------------------------"
         print """2) Difference between Target and Source Keys """
         for o in diff2.keys():
-            print "\n     Key :: "+o+"::",diff2[o]
-        print "number of such cases ::",len(diff2)
+            print "\n Key :: "+o+"::",DataComparator.printAllValues(diff2[o])
+        print "\n number of such cases ::",len(diff2)
         print "----------------------------------------------------------"
         print """3) Change Value Analysis for same Keys """
         for o in diff3.keys():
             print "\n For Key :: "+o
-            print "\n"+key+"::",diff3[o][key]
+            for k in diff3[o]:
+                print "\n",k,"::",diff3[o][k][0]," changes to ",diff3[o][k][1]
+            print "\n ======================================================"
         print "number of such cases ::",len(diff3)
 
     """ Print result of View Analysis """
     @staticmethod
     def printResultOfViewAnalysis(diff1,diff2,diff3,srcCount,tgtCount):
+        print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
         print "Analysis of Source and Target Directory Comparison Results"
         print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
         print """1) Difference between Source and Target Keys """
         for o in diff1.keys():
-            print "\n     Key :: "+o+"::",diff1[o]
+            print "\n     Key :: "+o+" with Information :: ",diff1[o]
         print "number of such cases ::",len(diff1)
-        print "----------------------------------------------------------"
+        print "\n ----------------------------------------------------------"
         print """2) Difference between Target and Source Keys """
         for o in diff2.keys():
-            print "\n     Key :: "+o+"::",diff2[o]
+            print "\n     Key :: "+o+" with Information :: ",diff2[o]
         print "number of such cases ::",len(diff2)
-        print "----------------------------------------------------------"
+        print "\n ----------------------------------------------------------"
         print """3) Change Value Analysis for same Keys """
         for o in diff3.keys():
             print "\n For Key :: "+o
@@ -242,6 +245,17 @@ class DataComparator(object):
         for o in tgtCount.keys():
             print "\n",[o,tgtCount[o]]
         print "number of such cases ::",len(tgtCount)
+    
+    """ Print in format for CB Transfer """
+    @staticmethod
+    def printAllValues(data=[]):
+        str={}
+        str['Exp']=data[0]
+        str['Flag']=data[1]
+        str['CAS']=data[2]
+        str['Rev Id']=data[3]
+        str['Value']=data[4]
+        return str
 
 def main():
     src="NONE"
