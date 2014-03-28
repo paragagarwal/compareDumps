@@ -2,7 +2,7 @@ bucket=$1
 machine=$2
 dir=$3
 source=$machine.mem.csv
-sshpass -p couchbase ssh root@$machine "/opt/couchbase/bin/cbtransfer http://localhost:8091 csv:/data/$source -b default -u Administrator -p password --single-node"
+sshpass -p couchbase ssh root@$machine "/opt/couchbase/bin/cbtransfer http://localhost:8091 csv:/data/$source -b $bucket -u Administrator -p password --single-node"
 sshpass -p couchbase scp root@$machine:/data/$source . 
 sshpass -p couchbase ssh root@$machine "rm -f /data/$source"
 mv $source $dir/mem/
